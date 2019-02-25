@@ -33,8 +33,8 @@ public class Inventory : MonoBehaviour {
     protected void InstantiateSlots(bool[,] shape)
     {
         int slotCount = 0;
-        int initialX = width / 2;
-        int initialY = height / 2;
+        int initialX = shape.GetLength(0) / 2;
+        int initialY = shape.GetLength(1) / 2;
         for (int j = shape.GetLength(1) - 1; j >= 0; j--)
         {
             for (int i = 0 ; i < shape.GetLength(0); i++)
@@ -42,7 +42,7 @@ public class Inventory : MonoBehaviour {
                 if (shape[i, j])
                 {
                     var slot = Instantiate(inventorySlotPrefab, this.transform);
-                    Vector2 slotSize = slot.GetComponent<BoxCollider2D>().size;
+                    Vector2 slotSize = slot.GetComponent<SpriteRenderer>().size;
                     slot.gameObject.name = "Slot " + slotCount;
                     slot.transform.position = new Vector3(-initialX + slotSize.x * i, -initialY + slotSize.y * j);
                     slot.transform.parent = slotsParent.transform;
