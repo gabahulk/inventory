@@ -10,18 +10,19 @@ public class Inventory : MonoBehaviour {
     public int width;
 
     GameObject[,] inventorySlots;
-    
+
     //public bool[,] inventoryShape; //It should be like this
 
     // Use this for initialization
     void Start () {
         inventorySlots = new GameObject[width, height];
         SetupSlots(CreateShape(width, height));
+        //TODO: insert box collider with inventory size
     }
-	
+
 	// Update is called once per frame
 	void Update () {
-		
+
 	}
 
     protected void SetupSlots(bool[,] shape)
@@ -42,7 +43,8 @@ public class Inventory : MonoBehaviour {
                 if (shape[i, j])
                 {
                     var slot = Instantiate(inventorySlotPrefab, this.transform);
-                    Vector2 slotSize = slot.GetComponent<SpriteRenderer>().size;
+                    Vector2 slotSize = slot.GetComponent<SpriteRenderer>().bounds.size;
+                    slot.GetComponent<InventorySlot>().ID = slotCount;
                     slot.gameObject.name = "Slot " + slotCount;
                     slot.transform.position = new Vector3(-initialX + slotSize.x * i, -initialY + slotSize.y * j);
                     slot.transform.parent = slotsParent.transform;
@@ -73,4 +75,10 @@ public class Inventory : MonoBehaviour {
 
         return shape;
     }
+
+    public void HandleSlotCollision(){
+
+    }
+
+    //TODO: handle inventory collider that will call HandleSlotCollision
 }

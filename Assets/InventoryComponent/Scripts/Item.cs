@@ -5,7 +5,7 @@ using UnityEngine.EventSystems;
 
 public class Item : MonoBehaviour {
     public bool[,] itemShape;
-    public GameObject itemSlotBehaviorPrefab;
+    public GameObject itemSlotPrefab;
 
     // Use this for initialization
     void Start () {
@@ -15,10 +15,10 @@ public class Item : MonoBehaviour {
         shape[1, 1] = true;
         CreateShape(shape);
     }
-	
+
 	// Update is called once per frame
 	void Update () {
-		
+
 	}
 
     void CreateShape(bool[,] shape)
@@ -32,13 +32,13 @@ public class Item : MonoBehaviour {
             {
                 if (shape[i, j])
                 {
-                    var slot = Instantiate(itemSlotBehaviorPrefab, this.transform);
+                    var slot = Instantiate(itemSlotPrefab, this.transform);
 
                     AddDragControlsToSlot(slot);
 
-                    Vector2 slotSize = slot.GetComponent<BoxCollider2D>().size;
+                    Vector2 slotSize = slot.GetComponent<SpriteRenderer>().bounds.size;
                     slot.gameObject.name = "Slot" + slotCount;
-                    slot.transform.position = new Vector3(-initialX + slotSize.x * i, -initialY + slotSize.y * j);
+                    slot.transform.position = new Vector3(-initialX + slotSize.x * i, -initialY + slotSize.y * j, -1);
                     slot.transform.parent = this.transform;
                     slotCount++;
                 }
@@ -87,7 +87,7 @@ public class Item : MonoBehaviour {
     public void DragMovement(PointerEventData data)
     {
         Vector3 pos = Camera.main.ScreenToWorldPoint(data.position);
-        pos.z = 0;
+        pos.z = -1;
         this.transform.position = pos;
     }
 }

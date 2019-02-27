@@ -9,38 +9,32 @@ public class InventorySlot : MonoBehaviour
     public Sprite baseInventorySlotSprite;
     public Sprite validInventorySlotSprite;
     public Sprite invalidInventorySlotSprite;
-
-    public bool HasItem { get; set; }
+    public int ID{ get; set; }
+    public bool CurrentItemSlot { get; set; }
 
     // Use this for initialization
     void Start () {
-		
+
 	}
-	
+
 	// Update is called once per frame
 	void Update () {
-		
+
 	}
 
     private void OnTriggerStay2D(Collider2D collision)
     {
-        print("ajsdiasjidasjidasi");
-        SpriteRenderer renderer = GetComponent<SpriteRenderer>();
         if (collision.gameObject.CompareTag("ItemSlot"))
         {
-            if (HasItem)
-            {
-                renderer.sprite = invalidInventorySlotSprite;
-            }
-            else
-            {
-                renderer.sprite = validInventorySlotSprite;
-            }
+            CurrentItemSlot = collision.gameObject;
         }
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
-        GetComponent<SpriteRenderer>().sprite = baseInventorySlotSprite;
+        if (collision.gameObject.CompareTag("ItemSlot"))
+        {
+            GetComponent<SpriteRenderer>().sprite = baseInventorySlotSprite;
+        }
     }
 }
