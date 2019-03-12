@@ -8,10 +8,15 @@ public class Item : MonoBehaviour {
     public GameObject itemSlotPrefab;
 
     public List<GameObject> itemSlots = new List<GameObject>();
+
+    public delegate void BeginDragEventHandler(Item item);
+    public static event BeginDragEventHandler DragBegun;
+
     public delegate void EndDragEventHandler();
     public static event EndDragEventHandler DragEnded;
 
     Transform anchorPosition;
+    Transform referenceSlot;
 
     // Use this for initialization
     void Start () {
@@ -77,6 +82,7 @@ public class Item : MonoBehaviour {
 
     public void OnBeginDrag(PointerEventData data) {
         DragMovement(data);
+        DragBegun(this);
     }
 
     public void OnDrag(PointerEventData data)
@@ -88,6 +94,7 @@ public class Item : MonoBehaviour {
     {
         DragMovement(data);
         DragEnded();
+        MoveToValidPosition();
     }
 
     public void DragMovement(PointerEventData data)
@@ -100,17 +107,17 @@ public class Item : MonoBehaviour {
     public void UpdateAnchor(Transform destination, Transform slot)
     {
         anchorPosition = destination;
-        MoveToValidPosition(slot);
+        referenceSlot = slot;
     }
 
-    public void MoveToValidPosition(Transform slot)
+    public void MoveToValidPosition()
     {
-        slot.parent = null;
-        this.transform.parent = slot;
-        slot.position = new Vector3(anchorPosition.position.x, anchorPosition.position.y,slot.position.z);
+        referenceSlot.parent = null;
+        this.transform.parent = referenceSlot;
+        referenceSlot.position = new Vector3(anchorPosition.position.x, anchorPosition.position.y, referenceSlot.position.z);
 
         this.transform.parent = null;
-        slot.parent = this.transform;
+        referenceSlot.parent = this.transform;
     }
 
 }

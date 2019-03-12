@@ -9,33 +9,14 @@ public class InventorySlot : MonoBehaviour
     public Sprite baseInventorySlotSprite;
     public Sprite validInventorySlotSprite;
     public Sprite invalidInventorySlotSprite;
-    public int ID{ get; set; }
-    public GameObject CurrentItemSlot { get; set; }
-    public bool Occupied{ get; set; }
+    public Item Item { get; set; }
 
-    // Use this for initialization
-    void Start () {
-    }
-
-	// Update is called once per frame
-	void Update () {
-
-	}
-
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        if (collision.gameObject.CompareTag("ItemSlot"))
-        {
-            CurrentItemSlot = collision.gameObject;
-        }
-    }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("ItemSlot"))
         {
             SetSlotSpriteToBaseSprite();
-            CurrentItemSlot = null;
         }
     }
 
