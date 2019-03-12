@@ -10,12 +10,12 @@ public class InventorySlot : MonoBehaviour
     public Sprite validInventorySlotSprite;
     public Sprite invalidInventorySlotSprite;
     public int ID{ get; set; }
-    public bool CurrentItemSlot { get; set; }
+    public GameObject CurrentItemSlot { get; set; }
+    public bool Occupied{ get; set; }
 
     // Use this for initialization
     void Start () {
-
-	}
+    }
 
 	// Update is called once per frame
 	void Update () {
@@ -34,7 +34,23 @@ public class InventorySlot : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("ItemSlot"))
         {
-            GetComponent<SpriteRenderer>().sprite = baseInventorySlotSprite;
+            SetSlotSpriteToBaseSprite();
+            CurrentItemSlot = null;
         }
+    }
+
+    public void SetSlotSpriteToValidSprite()
+    {
+        GetComponent<SpriteRenderer>().sprite = validInventorySlotSprite;
+    }
+
+    public void SetSlotSpriteToInvalidSprite()
+    {
+        GetComponent<SpriteRenderer>().sprite = invalidInventorySlotSprite;
+    }
+
+    public void SetSlotSpriteToBaseSprite()
+    {
+        GetComponent<SpriteRenderer>().sprite = baseInventorySlotSprite;
     }
 }

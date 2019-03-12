@@ -7,12 +7,18 @@ public class Item : MonoBehaviour {
     public bool[,] itemShape;
     public GameObject itemSlotPrefab;
 
+    public List<GameObject> itemSlots = new List<GameObject>();
+    public delegate void EndDragEventHandler();
+    public static event EndDragEventHandler DragEnded;
+
+    Transform anchorPosition;
+
     // Use this for initialization
     void Start () {
-        bool[,] shape = new bool[2, 2];
+        bool[,] shape = new bool[2, 1];
         shape[0, 0] = true;
         shape[1, 0] = true;
-        shape[1, 1] = true;
+        //shape[1, 1] = true;
         CreateShape(shape);
     }
 
@@ -24,8 +30,8 @@ public class Item : MonoBehaviour {
     void CreateShape(bool[,] shape)
     {
         int slotCount = 0;
-        int initialX = shape.GetLength(0) / 2;
-        int initialY = shape.GetLength(1) / 2;
+        float initialX = shape.GetLength(0) / 2;
+        float initialY = shape.GetLength(1) / 2;
         for (int j = shape.GetLength(1) - 1; j >= 0; j--)
         {
             for (int i = 0; i < shape.GetLength(0); i++)
@@ -36,9 +42,11 @@ public class Item : MonoBehaviour {
 
                     AddDragControlsToSlot(slot);
 
+                    itemSlots.Add(slot);
+
                     Vector2 slotSize = slot.GetComponent<SpriteRenderer>().bounds.size;
                     slot.gameObject.name = "Slot" + slotCount;
-                    slot.transform.position = new Vector3(-initialX + slotSize.x * i, -initialY + slotSize.y * j, -1);
+                    slot.transform.position = new Vector3(transform.position.x -initialX + slotSize.x * i, transform.position.y - initialY + slotSize.y * j, -1);
                     slot.transform.parent = this.transform;
                     slotCount++;
                 }
@@ -68,20 +76,18 @@ public class Item : MonoBehaviour {
 
 
     public void OnBeginDrag(PointerEventData data) {
-        //print("OnBeginDrag");
         DragMovement(data);
     }
 
     public void OnDrag(PointerEventData data)
     {
         DragMovement(data);
-        //print("OnDrag");
     }
 
     public void OnEndDrag(PointerEventData data)
     {
         DragMovement(data);
-        //print("OnEndDrag");
+        DragEnded();
     }
 
     public void DragMovement(PointerEventData data)
@@ -90,4 +96,21 @@ public class Item : MonoBehaviour {
         pos.z = -1;
         this.transform.position = pos;
     }
+
+    public void UpdateAnchor(Transform destination, Transform slot)
+    {
+        anchorPosition = destination;
+        MoveToValidPosition(slot);
+    }
+
+    public void MoveToValidPosition(Transform slot)
+    {
+        slot.parent = null;
+        this.transform.parent = slot;
+        slot.position = new Vector3(anchorPosition.position.x, anchorPosition.position.y,slot.position.z);
+
+        this.transform.parent = null;
+        slot.parent = this.transform;
+    }
+
 }
