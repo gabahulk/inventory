@@ -104,7 +104,7 @@ public class Item : MonoBehaviour {
         this.transform.position = pos;
     }
 
-    public void UpdateAnchor(Transform destination, Transform slot)
+    public void Bind(Transform destination, Transform slot)
     {
         anchorPosition = destination;
         referenceSlot = slot;

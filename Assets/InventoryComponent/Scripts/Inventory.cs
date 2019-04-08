@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,7 +23,7 @@ public class Inventory : MonoBehaviour {
     List<Item> Items = new List<Item>();
 
     GameObject currentItem;
-    BoxCollider2D inventoryCollider;
+    public BoxCollider2D inventoryCollider;
 
     public int height;
     public int width;
@@ -32,14 +33,12 @@ public class Inventory : MonoBehaviour {
     //public bool[,] inventoryShape; //It should be like this
     private void OnEnable()
     {
-        inventoryCollider = GetComponent<BoxCollider2D>();
         Item.DragBegun += DragBegunEventHandler;
         Item.DragEnded += DragEndedEventHandler;
     }
 
     private void OnDisable()
     {
-        inventoryCollider = GetComponent<BoxCollider2D>();
         Item.DragBegun -= DragBegunEventHandler;
         Item.DragEnded -= DragEndedEventHandler;
     }
@@ -140,6 +139,7 @@ public class Inventory : MonoBehaviour {
                     Debug.DrawLine(inventorySlot.transform.position, itemSlot.transform.position, new Color(1, 0, 0));
                 }
             }
+            // Refactor this
             if (slotClosestToItemSlot != null && !closestInventorySlots.Contains(slotClosestToItemSlot))
             {
                 closestInventorySlots.Add(slotClosestToItemSlot);
@@ -149,7 +149,7 @@ public class Inventory : MonoBehaviour {
         return closestInventorySlots;
     }
 
-    private InventoryToItemMap GetInventorySlotToItemSlotMapping(InventorySlot inventorySlot, Item item)
+    private Tuple<Transform, Transform> GetInventorySlotToItemSlotMapping(InventorySlot inventorySlot, Item item)
     {
         GameObject closestItemSlot = item.itemSlots[0];
         var distance = Mathf.Infinity;
@@ -163,7 +163,8 @@ public class Inventory : MonoBehaviour {
             }
         }
 
-        InventoryToItemMap map = new InventoryToItemMap(inventorySlot.transform, closestItemSlot.transform);
+        Tuple<Transform, Transform> map = new Tuple<Transform, Transform>(inventorySlot.transform, closestItemSlot.transform);
+
         return map;
     }
 
@@ -225,7 +226,7 @@ public class Inventory : MonoBehaviour {
         if (collision.gameObject.CompareTag("ItemSlot"))
         {
             var item = collision.transform.parent.gameObject.GetComponent<Item>();
-            if (!IsItemInsideInventory(item) && currentItem)
+            if (currentItem && !IsItemInsideInventory(item))
             {
                 currentItem = null;
             }
@@ -270,13 +271,15 @@ public class Inventory : MonoBehaviour {
             bool isValidPosition = IsPositionValidToInsertItem(closestInventorySlots, currentItem);
             if (isValidPosition)
             {
-                InventoryToItemMap map = GetInventorySlotToItemSlotMapping(closestInventorySlots[0], item);
-                currentItem.GetComponent<Item>().UpdateAnchor(map.InventorySlotTransform, map.ItemSlotTransform);
+
+                Tuple<Transform, Transform> map = GetInventorySlotToItemSlotMapping(closestInventorySlots[0], item);
+                currentItem.GetComponent<Item>().Bind(map.Item1, map.Item2);
                 foreach (var slot in closestInventorySlots)
                 {
                     slot.Item = item;
                 }
                 Items.Add(currentItem.GetComponent<Item>());
+                currentItem = null;
             }
         }
     }
